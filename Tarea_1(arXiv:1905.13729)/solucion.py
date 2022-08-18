@@ -135,7 +135,6 @@ def find_several_sets(n, z1, iters):
     return sets
 
 def print_results(z, gcd, l, k):
-    print('\n')
     print( 'Set: ', z )
     print( 'l: ', l )
     print( 'k: ', k )
@@ -175,17 +174,17 @@ print(np.unique(z, axis=0))
 
 #"""
 
-print('\nOne set for n=30')
-
 n = 30
-z1 = 1500
+z1 = 1200
 iters = 5
+
+print('\nOne set for n=', n)
 
 set = find_anomaly_free_set(n, z1)
 
 print_results(*set)
 
-print('\nPrimitive sets for n=30')
+print('\nPrimitive sets for n=',n)
 
 sets = find_several_sets(n, z1, iters)
 
