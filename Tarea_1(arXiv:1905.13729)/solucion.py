@@ -1,18 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 30
-
 def linear_combination(x, y):
+
     result = np.sum(x*(y**2))*x - np.sum((x**2)*y)*y
-    return np.array(sorted_absval(result)).astype(int)
+    gcd = np.gcd.reduce(result)
+
+    if (gcd==0):
+        result = sorted_absval(result)
+    else:
+        result = sorted_absval(result/gcd)
+
+    return np.array(result).astype(int), gcd
 
 def sorted_absval(x):
+
     return sorted(x, key=abs, reverse=True)
 
-def anomaly_free_set(l, k):
-    
-    m = n/2 - 1
+def vectorlike_sum(l, k, n):
 
     if (n % 2) == 0:
         
@@ -29,10 +34,13 @@ def anomaly_free_set(l, k):
         return linear_combination(vp, vm)
 
     else:
+
         raise RuntimeError("The input is wrong!")
 
-def number_generator(n):
+def vectorlike_generator(n):
 
+    assert(n>=5)
+    
     upper = int(n/2)
 
     if n % 2 == 0:
@@ -48,22 +56,42 @@ def number_generator(n):
     
         l = np.random.randint(1, upper, m)*(-1)**np.random.randint(0, 2, m)
         k = np.random.randint(1, upper, m+1)*(-1)**np.random.randint(0, 2, m)
+    
     else:
+        
         raise RuntimeError("The input is wrong!")
     
     return l, k
 
-x_ = np.random.randint(1, 6, 6)*(-1)**np.random.randint(0, 2, 6)
+def find_anomaly_free_set(n, z1):
 
-print(sorted_absval(x_))
+    l, k = vectorlike_generator(n)
+    z, gcd = vectorlike_sum(l, k, n)
 
-print(number_generator(6))
+    N = np.unique(z).size
+    N_unique = np.unique(np.abs(z)).size
+
+    if ( (N==N_unique) and (np.abs(z).min()>0) and np.abs(z[0])<=z1) :
+
+        return z, gcd, k, l
+
+    else:
+        
+        return find_anomaly_free_set(n, z1)
+
+n = 6#30
+
+z_ = find_anomaly_free_set(n, 12)
+
+print(z_)
+z_ = z_[0]
+print(z_, z_.sum(), (z_**3).sum())
 
 l = np.array([1, 2])
 k = np.array([1, -2])
 
-z = anomaly_free_set(l, k)
+z, gcd = vectorlike_sum(l, k, n)
 
-print(z, z.sum(), (z**3).sum())
+print(gcd, z, z.sum(), (z**3).sum())
 
 # funtion to sorted accoding to the absolute value
