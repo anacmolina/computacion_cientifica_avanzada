@@ -1,8 +1,10 @@
 import numpy as np
 
-def vectorlike_generator(n, upper):
+def vectorlike_generator(n):
 
     assert(n>=5)
+
+    upper = int(n/2 + 1)
 
     if n % 2 == 0:
     
