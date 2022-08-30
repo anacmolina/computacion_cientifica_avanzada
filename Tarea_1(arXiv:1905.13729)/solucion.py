@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def sorted_absval(x):
     return np.array(sorted(x, key=abs, reverse=True))
@@ -66,7 +65,7 @@ def vectorlike_sum(l, k, n):
         #print(vp, vm)
 
         up = up.flatten()
-        um = um.flatten()
+        um = um.flatten()-
         """
         
         return linear_combination(up, um)
@@ -79,7 +78,7 @@ def vectorlike_generator(n):
 
     assert(n>=5)
     
-    upper = int(n/2 + 1)
+    upper = int(n/ + 1)
 
     if n % 2 == 0:
     
@@ -156,8 +155,8 @@ print_results(z, gcd, l, k)
 print('\nOne set for n=6 and z1 <= 12')
 
 n = 6
-z1 = 12
-iters = 100
+z1 = 30
+iters = 1000
 
 set = find_anomaly_free_set(n, z1)
 
@@ -172,10 +171,10 @@ z = np.vstack(z)
 
 print(np.unique(z, axis=0))
 
-#"""
+"""
 
 n = 30
-z1 = 1200
+z1 = 5000
 iters = 5
 
 print('\nOne set for n=', n)
@@ -193,3 +192,4 @@ z = np.vstack(z)
 
 print(np.unique(z, axis=0))
 
+"""
