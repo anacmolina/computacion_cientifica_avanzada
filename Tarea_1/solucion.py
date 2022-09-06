@@ -1,5 +1,8 @@
 import numpy as np
 
+import warnings
+warnings.filterwarnings("ignore")
+
 def sorted_absval(x):
     return np.array(sorted(x, key=abs, reverse=True))
 
@@ -29,44 +32,12 @@ def vectorlike_sum(l, k, n):
         vp = np.hstack([l[0], k, (-1)*l[0], (-1)*k])
         vm = np.hstack([np.zeros(2), l, (-1)*l])
 
-        """
-        vp = np.array([])
-        vm = np.array([])
-
-        for vp_ in [l[0], k, (-1)*l[0], (-1)*k]:
-            vp = np.append(vp, vp_)
-        
-        for vm_ in [np.zeros(2), l, (-1)*l]:
-            vm = np.append(vm, vm_)
-
-        #print(vp, vm)
-
-        vp = vp.flatten()
-        vm = vm.flatten()
-        """
-
         return linear_combination(vp, vm)
     
     elif (n % 2) != 0:
 
         up = np.hstack([np.zeros(1), k, (-1)*k])
         um = np.hstack([l, k[0], np.zeros(1), (-1)*l, (-1)*k[0]])
-
-        """
-        up = np.array([])
-        um = np.array([])
-
-        for up_ in [np.zeros(1), k, (-1)*k]:
-            up = np.append(up, up_)
-        
-        for um_ in [l, k[0], np.zeros(1), (-1)*l, (-1)*k[0]]:
-            um = np.append(um, um_)
-
-        #print(vp, vm)
-
-        up = up.flatten()
-        um = um.flatten()-
-        """
         
         return linear_combination(up, um)
 
@@ -152,7 +123,7 @@ print_results(z, gcd, l, k)
 
 #"""
 
-print('\nOne set for n=6 and z1 <= 12')
+print('\nOne set for n=6 and z1 <= 30')
 
 n = 6
 z1 = 30
@@ -162,7 +133,7 @@ set = find_anomaly_free_set(n, z1)
 
 print_results(*set)
 
-print('\nPrimitive sets for n=6 and z1 <= 12')
+print('\nPrimitive sets for n=6 and z1 <= 30')
 
 sets = find_several_sets(n, z1, iters)
 
