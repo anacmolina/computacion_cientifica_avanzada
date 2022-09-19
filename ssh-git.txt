@@ -1,0 +1,6 @@
+ssh-keygen
+cd .ssh
+# Copiar la llave generada con el keygen id_rsa.pub
+github webpage general settings -> ssh keys
+
+find -name '*word*'
