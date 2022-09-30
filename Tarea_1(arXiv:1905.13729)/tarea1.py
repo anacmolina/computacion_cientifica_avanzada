@@ -1,24 +1,29 @@
+import time as time
 import numpy as np
+import pandas as pd
 
 import warnings
+
 warnings.filterwarnings("ignore")
+
 
 def sorted_absval(x):
     return np.array(sorted(x, key=abs, reverse=True))
 
+
 def linear_combination(x, y):
 
-    result = np.sum(x*(y**2))*x - np.sum((x**2)*y)*y
+    result = np.sum(x * (y**2)) * x - np.sum((x**2) * y) * y
 
     result = sorted_absval(result).astype(int)
 
-    if(result[0]<0):
-        result = result*(-1)
+    if result[0] < 0:
+        result = result * (-1)
 
     gcd = np.gcd.reduce(result)
 
-    if (gcd!=0):
-        result = result/gcd
+    if gcd != 0:
+        result = result / gcd
     else:
         result = result
 
@@ -28,139 +33,153 @@ def linear_combination(x, y):
 def vectorlike_sum(l, k, n):
 
     if (n % 2) == 0:
-        
-        vp = np.hstack([l[0], k, (-1)*l[0], (-1)*k])
-        vm = np.hstack([np.zeros(2), l, (-1)*l])
+
+        vp = np.hstack([l[0], k, (-1) * l[0], (-1) * k])
+        vm = np.hstack([np.zeros(2), l, (-1) * l])
 
         return linear_combination(vp, vm)
-    
+
     elif (n % 2) != 0:
 
-        up = np.hstack([np.zeros(1), k, (-1)*k])
-        um = np.hstack([l, k[0], np.zeros(1), (-1)*l, (-1)*k[0]])
-        
+        up = np.hstack([np.zeros(1), k, (-1) * k])
+        um = np.hstack([l, k[0], np.zeros(1), (-1) * l, (-1) * k[0]])
+
         return linear_combination(up, um)
 
     else:
 
         raise RuntimeError("The input is wrong!")
 
-def vectorlike_generator(n):
 
-    assert(n>=5)
-    
-    upper = int(n/ + 1)
+def vectorlike_generator(n, zmax):
+
+    assert n >= 5
+
+    upper = int(zmax / 2)
 
     if n % 2 == 0:
-    
-        m = int(n/2 - 1)
-        
-        l = np.random.randint(0, upper, m)*(-1)**np.random.randint(0, 2, m)
-        k = np.random.randint(0, upper, m)*(-1)**np.random.randint(0, 2, m)
 
-        l[0] = np.random.randint(1, upper, 1)*(-1)**np.random.randint(0, 2, 1)
-        k[0] = np.random.randint(1, upper, 1)*(-1)**np.random.randint(0, 2, 1)
+        m = int(n / 2 - 1)
+
+        l = np.random.randint(0, upper, m) * (-1) ** np.random.randint(0, 2, m)
+        k = np.random.randint(0, upper, m) * (-1) ** np.random.randint(0, 2, m)
+
+        l[0] = np.random.randint(1, upper, 1) * (-1) ** np.random.randint(0, 2, 1)
+        k[0] = np.random.randint(1, upper, 1) * (-1) ** np.random.randint(0, 2, 1)
 
     elif n % 2 != 0:
-    
-        m = int((n-3)/2)
-    
-        l = np.random.randint(0, upper, m)*(-1)**np.random.randint(0, 2, m)
-        k = np.random.randint(0, upper, m+1)*(-1)**np.random.randint(0, 2, m+1)
 
-        l[0] = np.random.randint(1, upper, 1)*(-1)**np.random.randint(0, 2, 1)
-        k[0] = np.random.randint(1, upper, 1)*(-1)**np.random.randint(0, 2, 1)
+        m = int((n - 3) / 2)
+
+        l = np.random.randint(0, upper, m) * (-1) ** np.random.randint(0, 2, m)
+        k = np.random.randint(0, upper, m + 1) * (-1) ** np.random.randint(0, 2, m + 1)
+
+        l[0] = np.random.randint(1, upper, 1) * (-1) ** np.random.randint(0, 2, 1)
+        k[0] = np.random.randint(1, upper, 1) * (-1) ** np.random.randint(0, 2, 1)
 
     else:
-        
+
         raise RuntimeError("The input is wrong!")
-    
+
     return l, k
 
-def find_anomaly_free_set(n, z1):
 
-    l, k = vectorlike_generator(n)
+def find_anomaly_free_set(n, zmax):
+
+    l, k = vectorlike_generator(n, zmax)
     z, gcd = vectorlike_sum(l, k, n)
 
     N = np.unique(z).size
     N_unique = np.unique(np.abs(z)).size
 
-    if ( (N==N_unique) and (np.abs(z).min()>0) and np.abs(z[0])<=z1 
-        and z.sum()==0 and (z**3).sum()==0 ) :
+    if (
+        (N == N_unique)
+        and (np.abs(z).min() > 0)
+        and np.abs(z[0]) <= zmax
+        and z.sum() == 0
+        and (z**3).sum() == 0
+    ):
 
-        return z, gcd, k, l
+        results = {"z": z, "l": l, "k": k, "gcd": gcd}
+
+        return results
 
     else:
-        
-        return find_anomaly_free_set(n, z1)
 
-def find_several_sets(n, z1, iters):
+        return find_anomaly_free_set(n, zmax)
+
+
+def find_several_sets(n, zmax, iters):
 
     sets = []
 
     for i in range(iters):
-        set = find_anomaly_free_set(n, z1)
+        set = find_anomaly_free_set(n, zmax)
         sets.append(set)
 
     return sets
 
-def print_results(z, gcd, l, k):
-    print( 'Set: ', z )
-    print( 'l: ', l )
-    print( 'k: ', k )
-    print( 'gcd: %d '%(gcd) )
-    print( 'sum(zi) = %d \t sum(z_i^3) = %d'%(z.sum(), (z**3).sum()) )
 
-"""
-print("Test for knowns l and k")
+def print_set_info(z, l, k, gcd):
+    df = pd.DataFrame(columns=["z", "l", "k", "gcd"])
+    df["z"] = [z]
+    df["l"] = [l]
+    df["k"] = [k]
+    df["gcd"] = gcd
+
+    print(df)
+    print("sum(zi) = {} \t sum(z_i^3) = {}".format(z.sum(), ((z) ** 3).sum()))
+    del df
+
+
+print("------------------------------------------------")
+print("Calculating 'z' for a known 'l' and 'k':\n")
 
 l = np.array([1, 2])
 k = np.array([1, -2])
 z, gcd = vectorlike_sum(l, k, 6)
 
-print_results(z, gcd, l, k)
-"""
+test_info = {"z": z, "l": l, "k": k, "gcd": gcd}
+print_set_info(**test_info)
 
-#"""
+print("------------------------------------------------")
+print("Find one set for n = 5 and zmax <= 30:\n")
 
-print('\nOne set for n=6 and z1 <= 30')
+n = 5
+zmax = 30
+
+set = find_anomaly_free_set(n, zmax)
+print_set_info(**set)
+
+print("------------------------------------------------")
+print("Find one set for n = 6 and zmax <= 30:\n")
 
 n = 6
-z1 = 30
-iters = 1000
+zmax = 30
 
-set = find_anomaly_free_set(n, z1)
+set = find_anomaly_free_set(n, zmax)
+print_set_info(**set)
 
-print_results(*set)
+print("------------------------------------------------")
+print("Sets for n=6 and zmax <= 30")
 
-print('\nPrimitive sets for n=6 and z1 <= 30')
+iters = 2000
+ti = time.time()
 
-sets = find_several_sets(n, z1, iters)
+sets = find_several_sets(n, zmax, iters)
 
-z = np.array(sets)[:, 0]
-z = np.vstack(z)
+df = pd.DataFrame(sets)
+df = df.sort_values(by=["gcd"], ignore_index=True)
+df["copy"] = df["z"].astype(str)
+df = df.drop_duplicates("copy").drop("copy", axis="columns").reset_index(drop=True)
 
-print(np.unique(z, axis=0))
+tf = time.time() - ti
 
-"""
+print("Time : {:.2f}s".format(tf))
 
-n = 30
-z1 = 5000
-iters = 5
 
-print('\nOne set for n=', n)
+df.to_csv("solutions_n6_zmax30.csv", index=False)
 
-set = find_anomaly_free_set(n, z1)
-
-print_results(*set)
-
-print('\nPrimitive sets for n=',n)
-
-sets = find_several_sets(n, z1, iters)
-
-z = np.array(sets)[:, 0]
-z = np.vstack(z)
-
-print(np.unique(z, axis=0))
-
-"""
+print("# Solutions: {}".format(df.shape[0]))
+print("Solutions save in file -> solutions_n6_zmax30.csv")
+print("------------------------------------------------")
